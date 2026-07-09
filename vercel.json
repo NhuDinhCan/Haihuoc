@@ -1,6 +1,6 @@
 {
   "installCommand": "bash install-flutter.sh",
-  "buildCommand": "echo Build already done",
+  "buildCommand": "export PATH=\"$HOME/flutter/bin:$PATH\" && flutter build web --release --base-href /",
   "outputDirectory": "build/web",
   "rewrites": [
     {
