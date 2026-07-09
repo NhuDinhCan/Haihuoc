@@ -85,23 +85,39 @@
       var videoId = '3qTCqaBV15k';
       var player = document.getElementById('music-player');
       var button = document.getElementById('music-toggle');
+      var started = false;
 
-      function startMusic() {
-        player.innerHTML =
-          '<iframe width="1" height="1" ' +
-          'src="https://www.youtube.com/embed/' + videoId +
-          '?autoplay=1&loop=1&playlist=' + videoId +
-          '&controls=0&disablekb=1&fs=0&modestbranding=1&playsinline=1&rel=0" ' +
-          'title="Background music" frameborder="0" ' +
-          'allow="autoplay; encrypted-media"></iframe>';
+      function startMusic(isManual) {
+        if (!started) {
+          started = true;
+          player.innerHTML =
+            '<iframe width="1" height="1" ' +
+            'src="https://www.youtube.com/embed/' + videoId +
+            '?autoplay=1&loop=1&playlist=' + videoId +
+            '&controls=0&disablekb=1&fs=0&modestbranding=1&playsinline=1&rel=0" ' +
+            'title="Background music" frameborder="0" ' +
+            'allow="autoplay; encrypted-media"></iframe>';
+        }
 
         button.classList.add('is-playing');
-        button.textContent = '♫ Đang phát';
+        button.textContent = isManual ? '♫ Đang phát' : '♫ Bấm nếu chưa nghe';
       }
 
-      button.addEventListener('click', startMusic);
-      document.addEventListener('pointerdown', startMusic, { once: true });
-      document.addEventListener('keydown', startMusic, { once: true });
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          startMusic(false);
+        }, 700);
+      });
+
+      button.addEventListener('click', function () {
+        startMusic(true);
+      });
+      document.addEventListener('pointerdown', function () {
+        startMusic(true);
+      }, { once: true });
+      document.addEventListener('keydown', function () {
+        startMusic(true);
+      }, { once: true });
     }());
   </script>
   <script src="flutter_bootstrap.js" async></script>
