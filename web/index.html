@@ -32,15 +32,16 @@
   <title>hellose1913</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    #music-player {
-      height: 1px;
-      opacity: 0;
+    #music-player-shell {
+      bottom: 0;
+      height: 90px;
+      left: 0;
+      opacity: 0.01;
       pointer-events: none;
       position: fixed;
-      right: 0;
-      top: 0;
-      width: 1px;
-      z-index: -1;
+      transform: translateX(-150px);
+      width: 160px;
+      z-index: 1;
     }
 
     #music-toggle {
@@ -69,7 +70,9 @@
   </style>
 </head>
 <body>
-  <div id="music-player" aria-hidden="true"></div>
+  <div id="music-player-shell" aria-hidden="true">
+    <div id="music-player"></div>
+  </div>
   <button id="music-toggle" type="button" aria-label="Bat nhac">♪ Bật nhạc</button>
 
   <!--
@@ -80,28 +83,101 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     (function () {
       var videoId = '3qTCqaBV15k';
-      var player = document.getElementById('music-player');
+      var shell = document.getElementById('music-player-shell');
       var button = document.getElementById('music-toggle');
-      var started = false;
+      var musicPlayer = null;
+      var apiReady = false;
+      var wantsMusic = false;
 
-      function startMusic(isManual) {
-        if (!started) {
-          started = true;
-          player.innerHTML =
-            '<iframe width="1" height="1" ' +
-            'src="https://www.youtube.com/embed/' + videoId +
-            '?autoplay=1&loop=1&playlist=' + videoId +
-            '&controls=0&disablekb=1&fs=0&modestbranding=1&playsinline=1&rel=0" ' +
-            'title="Background music" frameborder="0" ' +
-            'allow="autoplay; encrypted-media"></iframe>';
-        }
+      function musicUrl() {
+        return 'https://www.youtube.com/embed/' + videoId +
+          '?autoplay=1&loop=1&playlist=' + videoId +
+          '&controls=0&disablekb=1&enablejsapi=1&fs=0&modestbranding=1' +
+          '&origin=' + encodeURIComponent(window.location.origin) +
+          '&playsinline=1&rel=0&v=' + Date.now();
+      }
 
+      function updateButton(isManual) {
         button.classList.add('is-playing');
         button.textContent = isManual ? '♫ Đang phát' : '♫ Bấm nếu chưa nghe';
       }
+
+      function playWithApi(isManual) {
+        if (!musicPlayer || typeof musicPlayer.playVideo !== 'function') {
+          return false;
+        }
+
+        try {
+          musicPlayer.unMute();
+          musicPlayer.setVolume(85);
+          musicPlayer.playVideo();
+          updateButton(isManual);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function createApiPlayer(autoplay) {
+        shell.innerHTML = '<div id="music-player"></div>';
+        musicPlayer = new YT.Player('music-player', {
+          width: '160',
+          height: '90',
+          videoId: videoId,
+          playerVars: {
+            autoplay: autoplay ? 1 : 0,
+            controls: 0,
+            disablekb: 1,
+            enablejsapi: 1,
+            fs: 0,
+            loop: 1,
+            modestbranding: 1,
+            origin: window.location.origin,
+            playlist: videoId,
+            playsinline: 1,
+            rel: 0,
+          },
+          events: {
+            onReady: function () {
+              if (wantsMusic || autoplay) {
+                playWithApi(false);
+              }
+            },
+          },
+        });
+      }
+
+      function fallbackIframe(isManual) {
+        shell.innerHTML =
+          '<iframe width="160" height="90" ' +
+          'src="' + musicUrl() + '" ' +
+          'title="Background music" frameborder="0" ' +
+          'allow="autoplay; encrypted-media; fullscreen"></iframe>';
+        updateButton(isManual);
+      }
+
+      function startMusic(isManual) {
+        wantsMusic = true;
+
+        if (apiReady) {
+          if (!playWithApi(isManual)) {
+            createApiPlayer(true);
+            updateButton(isManual);
+          }
+          return;
+        }
+
+        fallbackIframe(isManual);
+      }
+
+      window.onYouTubeIframeAPIReady = function () {
+        apiReady = true;
+        createApiPlayer(true);
+      };
 
       window.addEventListener('load', function () {
         setTimeout(function () {
@@ -109,15 +185,21 @@
         }, 700);
       });
 
-      button.addEventListener('click', function () {
+      button.addEventListener('pointerdown', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         startMusic(true);
-      });
+      }, { capture: true });
+
       document.addEventListener('pointerdown', function () {
         startMusic(true);
-      }, { once: true });
+      }, { capture: true });
+      document.addEventListener('click', function () {
+        startMusic(true);
+      }, { capture: true });
       document.addEventListener('keydown', function () {
         startMusic(true);
-      }, { once: true });
+      }, { capture: true });
     }());
   </script>
   <script src="flutter_bootstrap.js" async></script>
