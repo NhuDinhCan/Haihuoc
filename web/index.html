@@ -70,6 +70,9 @@
   </style>
 </head>
 <body>
+  <audio id="background-audio" loop preload="auto" playsinline>
+    <source src="music/background.mp3" type="audio/mpeg">
+  </audio>
   <div id="music-player-shell" aria-hidden="true">
     <div id="music-player"></div>
   </div>
@@ -88,6 +91,7 @@
       var videoId = '3qTCqaBV15k';
       var shell = document.getElementById('music-player-shell');
       var button = document.getElementById('music-toggle');
+      var audio = document.getElementById('background-audio');
 
       function musicUrl() {
         return 'https://www.youtube.com/embed/' + videoId +
@@ -97,18 +101,39 @@
           '&playsinline=1&rel=0&v=' + Date.now();
       }
 
-      function updateButton(isManual) {
+      function updateButton(text) {
         button.classList.add('is-playing');
-        button.textContent = isManual ? '♫ Đang phát' : '♫ Bấm nếu chưa nghe';
+        button.textContent = text;
       }
 
-      function startMusic(isManual) {
+      function startYouTubeMusic(isManual) {
         shell.innerHTML =
           '<iframe width="320" height="180" ' +
           'src="' + musicUrl() + '" ' +
           'title="Background music" frameborder="0" ' +
           'allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>';
-        updateButton(isManual);
+        updateButton(isManual ? '♫ Đã bật nhạc' : '♫ Bấm nếu chưa nghe');
+      }
+
+      function startMusic(isManual) {
+        if (audio && audio.querySelector('source')) {
+          audio.volume = 0.85;
+          var playResult = audio.play();
+
+          if (playResult && typeof playResult.then === 'function') {
+            playResult
+              .then(function () {
+                shell.innerHTML = '';
+                updateButton('♫ Đang phát');
+              })
+              .catch(function () {
+                startYouTubeMusic(isManual);
+              });
+            return;
+          }
+        }
+
+        startYouTubeMusic(isManual);
       }
 
       window.addEventListener('load', function () {
