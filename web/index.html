@@ -33,14 +33,15 @@
   <link rel="manifest" href="manifest.json">
   <style>
     #music-player-shell {
-      height: 1px;
-      left: -9999px;
+      bottom: 0;
+      height: 180px;
+      left: 0;
       opacity: 0.01;
       pointer-events: none;
       position: fixed;
-      top: -9999px;
-      width: 1px;
-      z-index: -1;
+      transform: translateX(-340px);
+      width: 320px;
+      z-index: 0;
     }
 
     #music-toggle {
@@ -91,7 +92,7 @@
       function musicUrl() {
         return 'https://www.youtube.com/embed/' + videoId +
           '?autoplay=1&loop=1&playlist=' + videoId +
-          '&controls=0&disablekb=1&fs=0&modestbranding=1' +
+          '&controls=0&disablekb=1&fs=0&modestbranding=1&mute=0' +
           '&origin=' + encodeURIComponent(window.location.origin) +
           '&playsinline=1&rel=0&v=' + Date.now();
       }
@@ -103,10 +104,10 @@
 
       function startMusic(isManual) {
         shell.innerHTML =
-          '<iframe width="1" height="1" ' +
+          '<iframe width="320" height="180" ' +
           'src="' + musicUrl() + '" ' +
           'title="Background music" frameborder="0" ' +
-          'allow="autoplay; encrypted-media"></iframe>';
+          'allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>';
         updateButton(isManual);
       }
 
