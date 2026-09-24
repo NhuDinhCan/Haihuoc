@@ -179,7 +179,7 @@ class _LovePageState extends State<LovePage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 16),
           const Text(
-            "Cj có đồng ý làm người yêu em không? 💖",
+            "Cute có đồng ý làm người yêu tớ không? 💖",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 30,
@@ -289,12 +289,12 @@ class _LovePageState extends State<LovePage> with TickerProviderStateMixin {
                 border: Border.all(color: Colors.white, width: 1.5),
               ),
               child: const Text(
-                "Từ nay chj là của em nhé 🥰❤️\nAnh hứa sẽ thương em thật nhiều!",
+                "Từ nay cute là của tớ nhé 🥰❤️\nAnh hứa sẽ thương em thật nhiều!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 21,
                   height: 1.5,
-                  color: Colors.white,
+                  color: Colors.red,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -303,7 +303,7 @@ class _LovePageState extends State<LovePage> with TickerProviderStateMixin {
             const Icon(
               Icons.favorite,
               size: 95,
-              color: Colors.white,
+              color: Colors.red,
             ),
           ],
         ),
