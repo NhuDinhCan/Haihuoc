@@ -169,7 +169,7 @@ class _LovePageState extends State<LovePage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 20),
           const Text(
-            "EM có một điều muốn hỏi...",
+            "Tớ có một điều muốn hỏi...",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 23,
